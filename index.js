@@ -1,6 +1,5 @@
 const express = require("express");
 const axios = require("axios");
-const md5 = require("md5");
 
 const app = express();
 const port = 8080;
@@ -60,13 +59,12 @@ const sendOtp = async (req, res) => {
     );
     console.log(response.data);
 
-    const hashedOtp = md5(otp);
     await axios.post(
       "https://ufhdsmqbf1.execute-api.ap-south-1.amazonaws.com/author-dashboard-staging/author-dashboard-staging",
       {
         method: "sendOTP",
         mobileno: req.body.mobile,
-        otp: hashedOtp,
+        otp: otp,
       }
     );
 
