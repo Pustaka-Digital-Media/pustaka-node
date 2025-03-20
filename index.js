@@ -41,6 +41,7 @@ const sendOtp = async (req, res) => {
         },
       }
     );
+    console.log(response.data);
 
     const hashedOtp = md5(otp);
     await axios.post(
@@ -58,7 +59,6 @@ const sendOtp = async (req, res) => {
       data: {},
     });
   } catch (error) {
-    console.log(error);
     return res.json({
       status: 0,
       verifyOtp: false,
