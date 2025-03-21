@@ -66,7 +66,7 @@ const sendOtp = async (req, res) => {
     await axios.post(
       "https://fwy28o8vc7.execute-api.ap-south-1.amazonaws.com/author-dashboard-new/author-dashboard",
       {
-        method: "sendOTP",
+        method: "storeOTP",
         mobileno: req.body.mobile,
         otp: otp,
       }
