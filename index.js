@@ -1,5 +1,7 @@
 const express = require("express");
 const axios = require("axios");
+const http = require("http");
+const https = require("https");
 
 const app = express();
 const port = 8080;
@@ -83,8 +85,38 @@ const sendOtp = async (req, res) => {
   }
 };
 
+app.get("/", (_, res) => {
+  res.send("Pustaka Author Dashboard API");
+});
+
 app.post("/login/sendOtp", sendOtp);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+// app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`);
+// });
+
+// Listen both http & https ports
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(
+  {
+    key: fs.readFileSync(
+      path.resolve(__dirname, "../certs/api.pustaka.co.in.key")
+    ),
+    ca: fs.readFileSync(
+      path.resolve(__dirname, "../certs/api.pustaka.co.in.ca-bundle")
+    ),
+    passphrase: "Ebooks@123",
+    cert: fs.readFileSync(
+      path.resolve(__dirname, "../certs/api.pustaka.co.in.crt")
+    ),
+  },
+  app
+);
+
+httpServer.listen(port || 8080, () => {
+  console.log("HTTP Server running on port 80");
+});
+
+httpsServer.listen(443, () => {
+  console.log("HTTPS Server running on port 443");
 });
