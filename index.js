@@ -2,6 +2,8 @@ const express = require("express");
 const axios = require("axios");
 const http = require("http");
 const https = require("https");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const port = 8080;
@@ -100,14 +102,14 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(
   {
     key: fs.readFileSync(
-      path.resolve(__dirname, "../certs/api.pustaka.co.in.key")
+      path.resolve(__dirname, "certs/api.pustaka.co.in.key")
     ),
     ca: fs.readFileSync(
-      path.resolve(__dirname, "../certs/api.pustaka.co.in.ca-bundle")
+      path.resolve(__dirname, "certs/api.pustaka.co.in.ca-bundle")
     ),
     passphrase: "Ebooks@123",
     cert: fs.readFileSync(
-      path.resolve(__dirname, "../certs/api.pustaka.co.in.crt")
+      path.resolve(__dirname, "certs/api.pustaka.co.in.crt")
     ),
   },
   app
