@@ -4,6 +4,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
+const Razorpay = require("razorpay");
 
 const app = express();
 const port = 8080;
@@ -87,11 +88,98 @@ const sendOtp = async (req, res) => {
   }
 };
 
+const createRazorpaySubscription = async (req, res) => {
+  try {
+    const { staging, user_id, plan_id } = req.body;
+    const razorpay = new Razorpay({
+      key_id: staging ? "rzp_test_oS7OCD1EIJ8OLz" : "rzp_live_LwjeAdh4Cmzo2r",
+      key_secret: staging
+        ? "ILW9pthkjkCsGxfX9wBLT565"
+        : "pTq6afX5nLSd8ChnijPUoZjv",
+    });
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const { data: profileData } = await axios.post(
+      "https://1m2dc0uz5l.execute-api.ap-south-1.amazonaws.com/staging/api",
+      {
+        method: "getprofile",
+        user_id: parseInt(req.body.user_id),
+        language_id: 0,
+      }
+    );
+    let currentPlanData;
+    if (
+      req.body.planType === "ebook" &&
+      profileData.result.ebook_plan.plan_status === "Active"
+    ) {
+      currentPlanData = profileData.result.ebook_plan;
+    } else if (
+      req.body.planType === "audiobook" &&
+      profileData.result.audiobook_plan.plan_status === "Active"
+    ) {
+      currentPlanData = profileData.result.audiobook_plan;
+    }
+
+    // * note: total_count should be below: December 31, 2120 12:00:00 AM.
+    var total_count = 10;
+    switch (plan_id) {
+      case "plan_QAvjloCitlily0":
+        total_count = 4 * total_count;
+        break;
+      // case staging ? "plan_QAvjloCitlily0" : "plan_OghmLYOQxdzXa9":
+      //   total_count = 4 * total_count;
+      //   break;
+      // case staging ? "plan_OghjF6dWe6G7ra" : "plan_Oghmgi3ndtkrZv":
+      //   total_count = 1 * total_count;
+      //   break;
+    }
+
+    let currentRazorpaySubscription = null;
+
+    if (currentPlanData && currentPlanData.order_id) {
+      const currentSubscription = await razorpay.subscriptions.fetch(
+        currentPlanData.original_order_id
+      );
+      if (currentSubscription.status === "active") {
+        currentRazorpaySubscription = currentSubscription.id;
+      }
+    }
+
+    var options = {
+      plan_id: plan_id,
+      total_count: total_count,
+      offer_id: null,
+      notes: {
+        user_id: user_id,
+        type: currentRazorpaySubscription ? "update" : "subscription",
+        prev_subscription_id: currentRazorpaySubscription
+          ? currentRazorpaySubscription
+          : null,
+      },
+    };
+
+    const razorpaySubscription = await razorpay.subscriptions.create(options);
+    const razorpayPlan = await razorpay.plans.fetch(plan_id);
+
+    res.json({
+      status: 1,
+      subscriptionData: razorpaySubscription,
+      planData: razorpayPlan,
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({ status: 0, message: error.message });
+  }
+};
+
 app.get("/", (_, res) => {
   res.send("Pustaka Author Dashboard API");
 });
 
 app.post("/login/sendOtp", sendOtp);
+app.post("/razorpay/createSubscription", createRazorpaySubscription);
 
 // app.listen(port, () => {
 //   console.log(`Example app listening on port ${port}`);
