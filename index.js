@@ -212,6 +212,7 @@ app.get("/", (_, res) => {
 
 app.post("/login/sendOtp", sendOtp);
 app.post("/razorpay/createSubscription", createRazorpaySubscription);
+app.post("/razorpay/cancelSubscription", cancelRazorpaySubscription);
 
 // app.listen(port, () => {
 //   console.log(`Example app listening on port ${port}`);
