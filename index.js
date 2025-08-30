@@ -174,6 +174,38 @@ const createRazorpaySubscription = async (req, res) => {
   }
 };
 
+const cancelRazorpaySubscription = async (req, res) => {
+  try {
+    const { subscriptionId } = req.body;
+    const razorpay = new Razorpay({
+      key_id: staging ? "rzp_test_oS7OCD1EIJ8OLz" : "rzp_live_LwjeAdh4Cmzo2r",
+      key_secret: staging
+        ? "ILW9pthkjkCsGxfX9wBLT565"
+        : "pTq6afX5nLSd8ChnijPUoZjv",
+    });
+
+    razorpay.subscriptions
+      .cancel(subscriptionId, {
+        cancel_at_cycle_end: false,
+      })
+      .then((result) => {
+        if (result.id && result.id.length > 0) {
+          res.json({
+            status: 1,
+            result: result,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.json({ status: 0, message: error.message });
+      });
+  } catch (error) {
+    console.error(error);
+    res.json({ status: 0, message: error.message });
+  }
+};
+
 app.get("/", (_, res) => {
   res.send("Pustaka Author Dashboard API");
 });
