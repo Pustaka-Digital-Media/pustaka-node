@@ -176,7 +176,7 @@ const createRazorpaySubscription = async (req, res) => {
 
 const cancelRazorpaySubscription = async (req, res) => {
   try {
-    const { subscriptionId } = req.body;
+    const { subscriptionId, staging } = req.body;
     const razorpay = new Razorpay({
       key_id: staging ? "rzp_test_oS7OCD1EIJ8OLz" : "rzp_live_LwjeAdh4Cmzo2r",
       key_secret: staging
