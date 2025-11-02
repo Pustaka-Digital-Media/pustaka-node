@@ -36,7 +36,7 @@ const corsOptions = {
   maxAge: 86400, // Cache preflight for 24 hours
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Add request logging middleware
 app.use((req, res, next) => {
