@@ -12,11 +12,14 @@ const port = 8080;
 
 app.use(express.json());
 
-// Configure CORS
+// Configure CORS with debugging
 const corsOptions = {
-  origin: true, // Allow all origins
+  origin: (origin, callback) => {
+    console.log("CORS Origin:", origin);
+    callback(null, true); // Allow all origins
+  },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
   allowedHeaders: [
     "Origin",
     "X-Requested-With",
@@ -25,11 +28,21 @@ const corsOptions = {
     "Authorization",
     "Cache-Control",
     "Pragma",
+    "Access-Control-Allow-Headers",
+    "Access-Control-Request-Method",
+    "Access-Control-Request-Headers",
   ],
+  optionsSuccessStatus: 200, // For legacy browser support
   maxAge: 86400, // Cache preflight for 24 hours
 };
 
 app.use(cors(corsOptions));
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  next();
+});
 
 const generateOtp = () => {
   const digits = "0123456789";
@@ -212,6 +225,22 @@ const cancelRazorpaySubscription = async (req, res) => {
 
 app.get("/", (_, res) => {
   res.send("Pustaka Author Dashboard API");
+});
+
+// Explicit OPTIONS handlers for debugging
+app.options("/razorpay/createSubscription", (req, res) => {
+  console.log("OPTIONS request for createSubscription");
+  res.sendStatus(200);
+});
+
+app.options("/login/sendOtp", (req, res) => {
+  console.log("OPTIONS request for sendOtp");
+  res.sendStatus(200);
+});
+
+app.options("/razorpay/cancelSubscription", (req, res) => {
+  console.log("OPTIONS request for cancelSubscription");
+  res.sendStatus(200);
 });
 
 app.post("/login/sendOtp", sendOtp);
