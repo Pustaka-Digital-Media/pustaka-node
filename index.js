@@ -36,11 +36,16 @@ const corsOptions = {
   maxAge: 86400, // Cache preflight for 24 hours
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
-// Add request logging middleware
+// Add comprehensive request logging middleware
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  console.log("=== Incoming Request ===");
+  console.log(`${req.method} ${req.url}`);
+  console.log(`Origin: ${req.headers.origin}`);
+  console.log(`User-Agent: ${req.headers["user-agent"]}`);
+  console.log(`Headers:`, req.headers);
+  console.log("========================");
   next();
 });
 
@@ -247,6 +252,12 @@ app.post("/login/sendOtp", sendOtp);
 app.post("/razorpay/createSubscription", createRazorpaySubscription);
 app.post("/razorpay/cancelSubscription", cancelRazorpaySubscription);
 
+// Catch-all route to debug any unmatched requests
+app.all("*", (req, res) => {
+  console.log(`Unmatched route: ${req.method} ${req.url}`);
+  res.status(404).json({ message: "Route not found" });
+});
+
 // app.listen(port, () => {
 //   console.log(`Example app listening on port ${port}`);
 // });
@@ -270,9 +281,11 @@ const httpsServer = https.createServer(
 );
 
 httpServer.listen(port || 8080, () => {
-  console.log("HTTP Server running on port 80");
+  console.log(`HTTP Server running on port ${port || 8080}`);
+  console.log(`HTTP Server accessible at: http://localhost:${port || 8080}`);
 });
 
 httpsServer.listen(443, () => {
   console.log("HTTPS Server running on port 443");
+  console.log("HTTPS Server accessible at: https://api.pustaka.co.in");
 });
