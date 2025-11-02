@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const axios = require("axios");
 const http = require("http");
 const https = require("https");
@@ -11,22 +12,24 @@ const port = 8080;
 
 app.use(express.json());
 
-app.use(function (req, res, next) {
-  // CORS headers
-  res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-  // Set custom headers for CORS
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-type,Accept,X-Custom-Header"
-  );
+// Configure CORS
+const corsOptions = {
+  origin: true, // Allow all origins
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+    "Cache-Control",
+    "Pragma",
+  ],
+  maxAge: 86400, // Cache preflight for 24 hours
+};
 
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  return next();
-});
+app.use(cors(corsOptions));
 
 const generateOtp = () => {
   const digits = "0123456789";
@@ -186,9 +189,10 @@ const cancelRazorpaySubscription = async (req, res) => {
 
     razorpay.subscriptions
       .cancel(subscriptionId, {
-        cancel_at_cycle_end: false,
+        cancel_at_cycle_end: 0,
       })
       .then((result) => {
+        console.log(result);
         if (result.id && result.id.length > 0) {
           res.json({
             status: 1,
