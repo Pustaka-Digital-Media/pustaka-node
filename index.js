@@ -14,7 +14,11 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://your-frontend-domain.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://staging.pustaka.co.in",
+      "https://pustaka.co.in",
+    ],
     credentials: true,
   })
 );
