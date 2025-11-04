@@ -12,31 +12,12 @@ const port = 8080;
 
 app.use(express.json());
 
-// Configure CORS with debugging
-const corsOptions = {
-  origin: (origin, callback) => {
-    console.log("CORS Origin:", origin);
-    callback(null, true); // Allow all origins
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
-  allowedHeaders: [
-    "Origin",
-    "X-Requested-With",
-    "Content-Type",
-    "Accept",
-    "Authorization",
-    "Cache-Control",
-    "Pragma",
-    "Access-Control-Allow-Headers",
-    "Access-Control-Request-Method",
-    "Access-Control-Request-Headers",
-  ],
-  optionsSuccessStatus: 200, // For legacy browser support
-  maxAge: 86400, // Cache preflight for 24 hours
-};
-
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://your-frontend-domain.com"],
+    credentials: true,
+  })
+);
 
 // Add comprehensive request logging middleware
 app.use((req, res, next) => {
