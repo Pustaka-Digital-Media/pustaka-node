@@ -98,6 +98,8 @@ const sendOtp = async (req, res) => {
 
 const createRazorpaySubscription = async (req, res) => {
   try {
+    // Log incoming request data for debugging
+    console.log("createRazorpaySubscription called with body:", req.body);
     const { staging, user_id, plan_id } = req.body;
     const razorpay = new Razorpay({
       key_id: staging ? "rzp_test_oS7OCD1EIJ8OLz" : "rzp_live_LwjeAdh4Cmzo2r",
@@ -105,6 +107,26 @@ const createRazorpaySubscription = async (req, res) => {
         ? "ILW9pthkjkCsGxfX9wBLT565"
         : "pTq6afX5nLSd8ChnijPUoZjv",
     });
+
+    // Validate that the plan exists in the Razorpay account before creating a subscription
+    try {
+      console.log("Fetching plan from Razorpay, plan_id=", plan_id);
+      await razorpay.plans.fetch(plan_id);
+      console.log("Plan exists in Razorpay for plan_id=", plan_id);
+    } catch (planErr) {
+      console.error(
+        "Plan fetch failed for plan_id=",
+        plan_id,
+        planErr && planErr.error ? planErr.error : planErr
+      );
+      // Return a clearer message to the client for debugging
+      return res.status(400).json({
+        status: 0,
+        message:
+          "Plan not found in Razorpay. Check plan_id and environment (staging/live).",
+        debug: planErr && planErr.error ? planErr.error : String(planErr),
+      });
+    }
 
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
