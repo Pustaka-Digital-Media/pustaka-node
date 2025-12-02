@@ -129,17 +129,9 @@ const createRazorpaySubscription = async (req, res) => {
     }
 
     // * note: total_count should be below: December 31, 2120 12:00:00 AM.
-    var total_count = 10;
-    switch (plan_id) {
-      case "plan_QAvjloCitlily0":
-        total_count = 4 * total_count;
-        break;
-      // case staging ? "plan_QAvjloCitlily0" : "plan_OghmLYOQxdzXa9":
-      //   total_count = 4 * total_count;
-      //   break;
-      // case staging ? "plan_OghjF6dWe6G7ra" : "plan_Oghmgi3ndtkrZv":
-      //   total_count = 1 * total_count;
-      //   break;
+    var total_count = 1;
+    if (plan_id == "plan_RHk0jj4v7x4ZHP") {
+      total_count = 4;
     }
 
     let currentRazorpaySubscription = null;
