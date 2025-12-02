@@ -18,6 +18,8 @@ app.use(
       "http://localhost:3000",
       "https://staging.pustaka.co.in",
       "https://pustaka.co.in",
+      "https://www.staging.pustaka.co.in",
+      "https://www.pustaka.co.in",
     ],
     credentials: true,
   })
