@@ -99,7 +99,6 @@ const sendOtp = async (req, res) => {
 const createRazorpaySubscription = async (req, res) => {
   try {
     // Log incoming request data for debugging
-    console.log("createRazorpaySubscription called with body:", req.body);
     const { staging, user_id, plan_id } = req.body;
     const razorpay = new Razorpay({
       key_id: staging ? "rzp_test_oS7OCD1EIJ8OLz" : "rzp_live_LwjeAdh4Cmzo2r",
@@ -110,9 +109,7 @@ const createRazorpaySubscription = async (req, res) => {
 
     // Validate that the plan exists in the Razorpay account before creating a subscription
     try {
-      console.log("Fetching plan from Razorpay, plan_id=", plan_id);
       await razorpay.plans.fetch(plan_id);
-      console.log("Plan exists in Razorpay for plan_id=", plan_id);
     } catch (planErr) {
       console.error(
         "Plan fetch failed for plan_id=",
@@ -154,7 +151,7 @@ const createRazorpaySubscription = async (req, res) => {
 
     // * note: total_count should be below: December 31, 2120 12:00:00 AM.
     var total_count = 1;
-    if (plan_id == "plan_RHk0jj4v7x4ZHP") {
+    if (plan_id == "plan_RHk0jj4v7x4ZHP" || plan_id == "plan_QAvjloCitlily0") {
       total_count = 4;
     }
 
